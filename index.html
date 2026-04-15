@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ads Notice Hub - 통합 광고 공지사항</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="glass-header">
+            <div class="header-logo">
+                <span class="material-icons-round logo-icon">campaign</span>
+                <h1>Ads Notice Hub</h1>
+            </div>
+            <!-- Platform Tabs -->
+            <nav class="platform-tabs" id="platform-tabs">
+                <button class="platform-tab active" data-platform="all">전체</button>
+                <button class="platform-tab" data-platform="naver">네이버</button>
+                <button class="platform-tab" data-platform="kakao">카카오</button>
+                <button class="platform-tab" data-platform="google">구글</button>
+                <button class="platform-tab" data-platform="meta">메타</button>
+                <button class="platform-tab" data-platform="daangn">당근마켓</button>
+                <button class="platform-tab" data-platform="others">기타</button>
+            </nav>
+        </header>
+
+        <!-- Filters Section -->
+        <section class="filters-section">
+            <div class="container filters-container">
+                <!-- Category Tabs -->
+                <div class="category-tabs" id="category-tabs">
+                    <button class="category-tab active" data-category="all">전체</button>
+                    <button class="category-tab" data-category="notice">공지/이벤트</button>
+                    <button class="category-tab" data-category="product">상품/서비스</button>
+                    <button class="category-tab" data-category="policy">정책/심사</button>
+                    <button class="category-tab" data-category="error">오류/장애</button>
+                    <button class="category-tab" data-category="operation">운영</button>
+                </div>
+
+                <!-- Product Type Chips -->
+                <div class="product-chips" id="product-chips">
+                    <button class="product-chip active" data-product="all">전체 상품</button>
+                    <button class="product-chip" data-product="search">검색광고</button>
+                    <button class="product-chip" data-product="display">디스플레이광고</button>
+                    <button class="product-chip" data-product="shopping">쇼핑광고</button>
+                    <button class="product-chip" data-product="video">동영상광고</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content (Notice List) -->
+        <main class="main-content container">
+            <div class="toolbar">
+                <div class="results-count">전체 <span>0</span>건의 공지사항</div>
+                <div class="search-box">
+                    <span class="material-icons-round">search</span>
+                    <input type="text" id="search-input" placeholder="공지사항 검색...">
+                </div>
+            </div>
+            
+            <div class="notice-grid" id="notice-grid">
+                <!-- Notice cards will be injected here by JS -->
+            </div>
+    </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="notice-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close"><span class="material-icons-round">close</span></button>
+            <div class="modal-header">
+                <span class="platform-badge" id="modal-platform">네이버</span>
+                <span class="date" id="modal-date">2026.04.15</span>
+            </div>
+            <h2 class="modal-title" id="modal-title">제목</h2>
+            <div class="modal-tags">
+                <span class="tag" id="modal-category">공지</span>
+                <span class="tag tag-product" id="modal-product">검색광고</span>
+            </div>
+            <div class="modal-body" id="modal-body-content">
+                내용이 들어갑니다.
+            </div>
+            <div class="modal-footer">
+                <a href="#" target="_blank" class="btn-link" id="modal-link">
+                    <span class="material-icons-round">open_in_new</span> 원문 보러가기
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
