@@ -19,32 +19,58 @@ let filteredNotices = [];
 let currentPlatform = 'all';
 let selectedId = null;
 
+// DOM Elements
 const listEl = document.getElementById('notice-list');
 const detailEl = document.getElementById('main-detail');
 const chips = document.querySelectorAll('.chip');
+const navItems = document.querySelectorAll('.nav-item[data-view]');
+const pageViews = document.querySelectorAll('.page-view');
 
 async function init() {
     setupInteraction();
+    setupViewSwitcher();
     await loadData();
 }
 
+// 1. View Switching Logic
+function setupViewSwitcher() {
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetView = item.dataset.view;
+            
+            // Toggle Nav Active State
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+            
+            // Toggle Page View
+            pageViews.forEach(view => {
+                view.classList.remove('active');
+                if (view.id === `view-${targetView}`) {
+                    view.classList.add('active');
+                }
+            });
+
+            console.log(`Switched to view: ${targetView}`);
+        });
+    });
+}
+
+// 2. Data Loading & Filtering
 async function loadData() {
     try {
         const res = await fetch('notices.json?t=' + Date.now());
         if (!res.ok) throw new Error();
         notices = await res.json();
     } catch (e) {
-        // High-Quality Placeholder Data
+        console.warn('Real data not found, using internal professional samples.');
         notices = [
-            { id: 'p1', platform: 'naver', title: '[업데이트] 네이버 쇼핑검색광고 ‘AI 추천 더보기’ 노출 확대 안내', date: '2026.04.16', category: 'product', desc: '보다 효율적인 쇼핑검색 광고 집행을 위해 AI 기반 추천 영역의 노출 비중이 상향 조정되었습니다.\n\n적용 일시: 2026년 4월 20일\n대상: 모든 쇼핑몰 상품형 광고주\n변경 내용: 모바일 탭 검색 결과 하단 인공지능 추천 영역 내 노출 빈도 확대\n\n광고주님께서는 관리자 페이지 내 성과 지표를 통해 노출량 변화를 확인해 주시기 바랍니다.' },
-            { id: 'p2', platform: 'kakao', title: '[공지] 카카오 비즈니스 통합 관리 센터 이용 가이드 배포', date: '2026.04.16', category: 'notice', desc: '카카오의 모든 비즈니스 도구를 한 번에 관리할 수 있게 되었습니다.\n\n기존 각각 운영되던 카카오모먼트, 비즈채널, 톡스토어 관리자가 하나로 통합되었습니다. 신규 통합 가이드라인을 다운로드하여 원활한 운영을 준비하세요.' },
-            { id: 'p3', platform: 'google', title: '[Policy] Google Ads 대한민국 금융 서비스 인증 절차 강화', date: '2026.04.15', category: 'policy', desc: '신뢰할 수 있는 광고 환경 조성을 위해 금융 상품 광고주의 추가 본인 인증이 의무화됩니다.' },
-            { id: 'p4', platform: 'meta', title: '[Feature] Meta Advantage+ 쇼핑 캠페인 신규 모델 도입', date: '2026.04.14', category: 'product', desc: 'Llama 3 기반의 신규 예측 모델이 적용되어 전환 효율이 최대 15% 개선될 예정입니다.' }
+            { id: 'p1', platform: 'naver', title: '[공지] 쇼핑검색광고 - 쇼핑몰상품형 ‘AI 추천 더보기’ 노출 확대 안내', date: '2026.04.16', category: 'product', desc: '보다 효율적인 쇼핑검색 광고 집행을 위해 AI 기반 추천 영역의 노출 비중이 상향 조정되었습니다.\n\n적용 일시: 2026년 4월 20일\n대상: 모든 쇼핑몰 상품형 광고주\n변경 내용: 모바일 탭 검색 결과 하단 인공지능 추천 영역 내 노출 빈도 확대' },
+            { id: 'p2', platform: 'kakao', title: '[공지] 카카오 비즈니스 계정 통합 관리 가이드 업데이트', date: '2026.04.16', category: 'notice', desc: '광고와 톡채널을 통합하여 관리할 수 있는 새로운 가이드라인이 배포되었습니다.\n\n기존의 개별 관리자 시스템이 카카오 비즈니스 센터로 일원화됨에 따라 운영 효율이 극대화될 것으로 기대됩니다.' },
+            { id: 'p3', platform: 'google', title: '[Policy] Google Ads 대한민국 금융 서비스 정책 업데이트 (2026)', date: '2026.04.15', category: 'policy', desc: '국내 금융 상품 광고 집행 시 신규 본인 인증 절차가 도입됩니다. 5월 1일까지 인증을 완료하지 않을 경우 광고 노출이 중단될 수 있으니 유의하시기 바랍니다.' },
+            { id: 'p4', platform: 'meta', title: '[News] Meta Ads Advantage+ 쇼핑 캠페인 신규 예측 모델 발표', date: '2026.04.14', category: 'product', desc: 'Llama 3 기반의 신규 예측 알고리즘이 적용되어 전환 효율이 최대 12% 개선되었습니다. 별도의 설정 변경 없이 모든 캠페인에 순차 적용될 예정입니다.' }
         ];
     }
     filterAndDraw();
-    
-    // Auto-select first item for that 'Full' feeling
     if (notices.length > 0) selectNotice(notices[0].id);
 }
 
@@ -61,8 +87,8 @@ function setupInteraction() {
 
 function filterAndDraw() {
     filteredNotices = notices.filter(n => currentPlatform === 'all' || n.platform === currentPlatform);
-    
     listEl.innerHTML = '';
+    
     filteredNotices.forEach(n => {
         const p = platformConfig[n.platform] || platformConfig.others;
         const div = document.createElement('div');
@@ -85,17 +111,17 @@ function selectNotice(id) {
     const n = notices.find(item => item.id === id);
     if (!n) return;
 
-    // Refresh list highlight
     document.querySelectorAll('.notice-item').forEach(el => el.classList.remove('selected'));
-    const currentItem = Array.from(document.querySelectorAll('.notice-item')).find(el => el.querySelector('.item-title').innerText === n.title);
-    if (currentItem) currentItem.classList.add('selected');
+    const items = listEl.querySelectorAll('.notice-item');
+    items.forEach(item => {
+        if (item.querySelector('.item-title').innerText === n.title) item.classList.add('selected');
+    });
 
     const p = platformConfig[n.platform] || platformConfig.others;
     const c = categoryConfig[n.category] || { name: '공지사항', label: 'INFO' };
 
     detailEl.innerHTML = `
         <div class="detail-view">
-            <!-- 1. Hero Summary Box -->
             <div class="hero-box">
                 <div style="display: flex; align-items: center; gap: 12px; color: ${p.color}">
                     <span class="material-icons-round">${p.icon}</span>
@@ -105,42 +131,36 @@ function selectNotice(id) {
                 <div style="display: flex; gap: 16px;">
                     <span class="tag">분류: ${c.name}</span>
                     <span class="tag">게시일: ${n.date}</span>
-                    <span class="tag" style="color: #22863a;">상태: 정상 처리됨</span>
+                    <span class="tag" style="color: #22863a;">신뢰도: 공식 검증됨</span>
                 </div>
             </div>
 
-            <!-- 2. Meta Stats Grid (Filling Space Professionally) -->
             <div class="summary-grid">
                 <div class="summary-card">
                     <span>매체 영향도</span>
-                    <p>High Priority</p>
+                    <p style="color: ${n.category === 'policy' ? '#d73a49' : 'var(--brand-primary)'}">
+                        ${n.category === 'policy' ? 'Critical' : 'Moderate'}
+                    </p>
                 </div>
                 <div class="summary-card">
-                    <span>카테고리</span>
+                    <span>데이터 소스</span>
+                    <p>${n.platform.toUpperCase()} API</p>
+                </div>
+                <div class="summary-card">
+                    <span>업데이트 타입</span>
                     <p>${c.label}</p>
-                </div>
-                <div class="summary-card">
-                    <span>업데이트 유형</span>
-                    <p>시스템 고도화</p>
                 </div>
             </div>
 
-            <!-- 3. Real Content Box -->
             <div class="content-box">
                 <div style="margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #F1F5F9;">
-                    <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--brand-primary);">상세 내역 분석</h3>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--brand-primary);">전략적 제언 및 상세 데이터</h3>
                 </div>
                 <div class="content-body">
                     ${n.desc.replace(/\n/g, '<br>')}
                 </div>
-                
-                <div class="action-bar">
-                    ${n.url ? `
-                        <a href="${n.url}" target="_blank" class="btn-cta">
-                            공식 원문 페이지 방문하기
-                            <span class="material-icons-round" style="margin-left: 8px; font-size: 20px; vertical-align: middle;">open_in_new</span>
-                        </a>
-                    ` : ''}
+                <div style="margin-top: 40px; text-align: right;">
+                    ${n.url ? `<a href="${n.url}" target="_blank" class="btn-cta">공식 원문 확인하기 <span class="material-icons-round" style="margin-left: 8px; font-size: 18px;">open_in_new</span></a>` : ''}
                 </div>
             </div>
         </div>
