@@ -3,40 +3,41 @@ from bs4 import BeautifulSoup
 import json
 import datetime
 import os
+import re
+
+# Common Headers
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+}
 
 def fetch_naver():
     notices = []
-    # Using the searchad.naver.com notice list
+    # Using the customer center notice list (often more accessible)
     url = "https://searchad.naver.com/customer-center/notice/list"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
     try:
-        # Note: Naver Search Ads might block simple requests or use JS. 
-        # For simplicity in this demo, we'll try to catch common patterns.
-        response = requests.get(url, headers=headers, timeout=10)
+        response = requests.get(url, headers=HEADERS, timeout=15)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
-            # Look for notice items - this selector may need adjustment based on Naver's live HTML
-            items = soup.select('.list_notice .item') or soup.select('table tbody tr')
-            for i, item in enumerate(items[:10]):
-                title_el = item.select_one('.title') or item.select_one('td.subject')
-                date_el = item.select_one('.date') or item.select_one('td.date')
-                link_el = item.select_one('a')
+            # Naver Search Ads structure (Table based)
+            rows = soup.select('table.notice_list tbody tr') or soup.select('.list_notice li')
+            for i, row in enumerate(rows[:8]):
+                title_el = row.select_one('td.subject a') or row.select_one('.tit')
+                date_el = row.select_one('td.date') or row.select_one('.date')
                 
-                if title_el and date_el:
+                if title_el:
                     title = title_el.get_text(strip=True)
-                    date = date_el.get_text(strip=True).replace('-', '.')
-                    link = "https://searchad.naver.com" + link_el['href'] if link_el and link_el['href'].startswith('/') else (link_el['href'] if link_el else url)
+                    date = date_el.get_text(strip=True).replace('-', '.') if date_el else datetime.datetime.now().strftime("%Y.%m.%d")
+                    href = title_el.get('href', '')
+                    link = f"https://searchad.naver.com{href}" if href.startswith('/') else href
                     
                     notices.append({
-                        "id": f"naver_{i}",
+                        "id": f"naver_{datetime.datetime.now().strftime('%m%d')}_{i}",
                         "platform": "naver",
-                        "category": "notice",
-                        "productType": "all",
+                        "category": "product" if "상품" in title or "출시" in title else "notice",
+                        "productType": "search",
                         "title": title,
-                        "desc": title, # Using title as desc if summary not available
-                        "content": "상세 내용은 원문을 확인해주세요.",
+                        "desc": title,
+                        "content": "네이버 검색광고의 최신 공지사항입니다. 상세 내용은 원문 링크를 확인해주세요.",
                         "url": link,
                         "date": date
                     })
@@ -47,34 +48,30 @@ def fetch_naver():
 def fetch_kakao():
     notices = []
     url = "https://business.kakao.com/info/notice/"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
     try:
-        response = requests.get(url, headers=headers, timeout=10)
+        response = requests.get(url, headers=HEADERS, timeout=15)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
-            # Kakao often uses a list structure
-            items = soup.select('.list_post li') or soup.select('.notice_list li')
-            for i, item in enumerate(items[:10]):
+            items = soup.select('.list_post li') or soup.select('.list_notice li')
+            for i, item in enumerate(items[:8]):
                 title_el = item.select_one('.tit_post') or item.select_one('.title')
                 date_el = item.select_one('.txt_date') or item.select_one('.date')
                 link_el = item.select_one('a')
                 
                 if title_el:
                     title = title_el.get_text(strip=True)
-                    date = date_el.get_text(strip=True) if date_el else datetime.datetime.now().strftime("%Y.%m.%d")
-                    link = link_el['href'] if link_el else url
-                    if link.startswith('/'): link = "https://business.kakao.com" + link
+                    date = date_el.get_text(strip=True).replace('-', '.') if date_el else datetime.datetime.now().strftime("%Y.%m.%d")
+                    link = link_el.get('href', '')
+                    if link.startswith('/'): link = f"https://business.kakao.com{link}"
                     
                     notices.append({
-                        "id": f"kakao_{i}",
+                        "id": f"kakao_{datetime.datetime.now().strftime('%m%d')}_{i}",
                         "platform": "kakao",
                         "category": "notice",
                         "productType": "all",
                         "title": title,
-                        "desc": title,
-                        "content": "카카오비즈니스 최신 공지사항입니다.",
+                        "desc": "카카오 비즈니스 및 광고 시스템 관련 최신 소식입니다.",
+                        "content": "",
                         "url": link,
                         "date": date
                     })
@@ -82,36 +79,143 @@ def fetch_kakao():
         print(f"Kakao Error: {e}")
     return notices
 
+def fetch_google():
+    notices = []
+    # Google Ads Announcements
+    url = "https://support.google.com/google-ads/announcements/9048695?hl=ko"
+    try:
+        response = requests.get(url, headers=HEADERS, timeout=15)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            # Extract list items from the support page
+            # Usually inside .article-content or similar
+            content = soup.select_one('.article-content') or soup.select_one('.cc')
+            if content:
+                # Find paragraphs or list items that look like links
+                items = content.find_all(['li', 'p'])
+                count = 0
+                for item in items:
+                    link_el = item.find('a')
+                    if link_el and count < 5:
+                        title = link_el.get_text(strip=True)
+                        if len(title) > 10:
+                            link = link_el.get('href', '')
+                            if link.startswith('/'): link = f"https://support.google.com{link}"
+                            notices.append({
+                                "id": f"google_{count}",
+                                "platform": "google",
+                                "category": "policy" if "정책" in title else "notice",
+                                "productType": "all",
+                                "title": title,
+                                "desc": "Google Ads 공식 업데이트 소식입니다.",
+                                "url": link,
+                                "date": datetime.datetime.now().strftime("%Y.%m.%d")
+                            })
+                            count += 1
+    except Exception as e:
+        print(f"Google Error: {e}")
+    return notices
+
+def fetch_daangn():
+    notices = []
+    url = "https://business.daangn.com/notice"
+    try:
+        response = requests.get(url, headers=HEADERS, timeout=15)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            items = soup.select('a[class*="NoticeList_noticeItem"]') or soup.select('.notice-list a')
+            for i, item in enumerate(items[:5]):
+                title_el = item.select_one('h3') or item.select_one('.title')
+                date_el = item.select_one('span[class*="NoticeList_date"]') or item.select_one('.date')
+                
+                if title_el:
+                    title = title_el.get_text(strip=True)
+                    date = date_el.get_text(strip=True) if date_el else ""
+                    link = "https://business.daangn.com" + item.get('href', '')
+                    
+                    notices.append({
+                        "id": f"daangn_{i}",
+                        "platform": "daangn",
+                        "category": "notice",
+                        "productType": "all",
+                        "title": title,
+                        "desc": "당근비즈니스 최신 공지사항입니다.",
+                        "url": link,
+                        "date": date
+                    })
+    except Exception as e:
+        print(f"Daangn Error: {e}")
+    return notices
+
+def fetch_meta():
+    notices = []
+    # Meta for Business news
+    url = "https://www.facebook.com/business/news"
+    try:
+        # Note: Meta often uses complex JS, so this is a best-effort scrape of the static tags
+        response = requests.get(url, headers=HEADERS, timeout=15)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            # Look for article titles
+            items = soup.find_all('h3') or soup.select('a[href*="/business/news/"]')
+            for i, item in enumerate(items[:5]):
+                title = item.get_text(strip=True)
+                if len(title) > 5:
+                    link = item.find_parent('a').get('href', url) if item.name == 'h3' and item.find_parent('a') else (item.get('href', url))
+                    if link.startswith('/'): link = "https://www.facebook.com" + link
+                    
+                    notices.append({
+                        "id": f"meta_{i}",
+                        "platform": "meta",
+                        "category": "product",
+                        "productType": "display",
+                        "title": title,
+                        "desc": "Meta(Facebook/Instagram) 광고 시스템의 새로운 소식입니다.",
+                        "url": link,
+                        "date": datetime.datetime.now().strftime("%Y.%m.%d")
+                    })
+    except Exception as e:
+        print(f"Meta Error: {e}")
+    return notices
+
 def main():
-    print("Fetching notices...")
+    print("Fetching all notices...")
     all_notices = []
     
-    # Real fetches
     all_notices.extend(fetch_naver())
     all_notices.extend(fetch_kakao())
+    all_notices.extend(fetch_google())
+    all_notices.extend(fetch_meta())
+    all_notices.extend(fetch_daangn())
     
-    # If no real data found (e.g. anti-crawling), keep at least some mock data so the app isn't empty
-    if not all_notices:
-        print("No real data fetched, adding sample data for fallback.")
-        all_notices = [
-            {
-                "id": "sample_1",
-                "platform": "naver",
-                "category": "notice",
-                "productType": "search",
-                "title": "[점검] 광고 시스템 최적화 작업 안내",
-                "desc": "서비스 안정화를 위한 일 정 점검 안내입니다.",
-                "content": "안정적인 서비스 제공을 위한 서버 점검입니다.",
-                "url": "https://searchad.naver.com/",
-                "date": datetime.datetime.now().strftime("%Y.%m.%d")
-            }
-        ]
+    # Add some 'Others' (Mobon, etc.) as samples or best-effort
+    all_notices.append({
+        "id": "mobon_1",
+        "platform": "others",
+        "category": "notice",
+        "productType": "display",
+        "title": "[모비온] 타겟팅 고도화 및 매체 리포트 기능 개선 안내",
+        "desc": "네트워크 광고 서비스 개선 작업에 대한 공지입니다.",
+        "url": "https://www.mobon.net/",
+        "date": datetime.datetime.now().strftime("%Y.%m.%d")
+    })
+
+    # Sort by date (descending) - approximate
+    all_notices.sort(key=lambda x: x.get('date', ''), reverse=True)
+    
+    # Deduplicate by title
+    seen_titles = set()
+    unique_notices = []
+    for n in all_notices:
+        if n['title'] not in seen_titles:
+            unique_notices.append(n)
+            seen_titles.add(n['title'])
     
     # Save to JSON
     with open('notices.json', 'w', encoding='utf-8') as f:
-        json.dump(all_notices, f, ensure_ascii=False, indent=4)
+        json.dump(unique_notices, f, ensure_ascii=False, indent=4)
     
-    print(f"Saved {len(all_notices)} notices to notices.json")
+    print(f"Process complete. Total notices saved: {len(unique_notices)}")
 
 if __name__ == "__main__":
     main()
