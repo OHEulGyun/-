@@ -1,62 +1,52 @@
 [
     {
-        "id": "naver_auto_1",
-        "platform": "naver",
-        "category": "product",
-        "productType": "search",
-        "title": "[업데이트] 네이버 쇼핑검색광고 노출 지면 확대 및 입찰 최적화 도입",
-        "desc": "쇼핑검색광고의 효율을 높이기 위한 신규 엔진 업데이트가 적용되었습니다.",
-        "url": "https://searchad.naver.com/",
-        "date": "2026.04.16"
-    },
-    {
-        "id": "kakao_auto_1",
-        "platform": "kakao",
+        "platform": "meta",
+        "title": "Log in to Meta for Business",
+        "url": "https://www.facebook.com/business/news",
+        "date": "2026.04.16",
+        "id": "meta_0416_0455_0",
         "category": "notice",
         "productType": "all",
-        "title": "[기능안내] 카카오 비즈니스 계정 통합 관리 플랫폼 오픈",
-        "desc": "광고, 톡채널, 스토어를 한 번에 관리할 수 있는 계정 센터가 오픈되었습니다.",
-        "url": "https://business.kakao.com/",
-        "date": "2026.04.16"
+        "desc": "Meta 공식 실제 공지사항입니다."
     },
     {
-        "id": "google_auto_1",
-        "platform": "google",
-        "category": "policy",
-        "productType": "all",
-        "title": "[공지] Google Ads 개인 정보 보호 진단 도구 업데이트 (2026)",
-        "desc": "쿠키리스 환경에 대비한 전환 태그 진단 도구가 새롭게 출시되었습니다.",
-        "url": "https://support.google.com/google-ads",
-        "date": "2026.04.16"
-    },
-    {
-        "id": "meta_auto_1",
         "platform": "meta",
-        "category": "error",
-        "productType": "display",
-        "title": "[안내] 인스타그램 릴스 광고 리포트 데이터 지연 현상 안내",
-        "desc": "일부 리전에서 발생한 광고 지표 누락 건에 대한 복구 및 보상 안내입니다.",
-        "url": "https://www.facebook.com/business",
-        "date": "2026.04.16"
-    },
-    {
-        "id": "daangn_auto_1",
-        "platform": "daangn",
-        "category": "product",
+        "title": "Removing Technical Barriers to Help Businesses of All Sizes Get More From Their Ads",
+        "url": "https://www.facebook.com/business/news",
+        "date": "2026.04.16",
+        "id": "meta_0416_0455_1",
+        "category": "notice",
         "productType": "all",
-        "title": "[당근] 지역 타겟팅 광고 내 '전문가 찾기' 섹션 노출 추가",
-        "desc": "이웃들이 전문가를 찾을 때 우리 가게 광고가 먼저 보이게 업데이트 되었습니다.",
-        "url": "https://business.daangn.com/",
-        "date": "04:49 어제"
+        "desc": "Meta 공식 실제 공지사항입니다."
     },
     {
-        "id": "mobon_1",
+        "platform": "meta",
+        "title": "From Commerce to Culture: How AI is Powering Personalized Connection and Growth Across the Funnel",
+        "url": "https://www.facebook.com/business/news",
+        "date": "2026.04.16",
+        "id": "meta_0416_0455_2",
+        "category": "notice",
+        "productType": "all",
+        "desc": "Meta 공식 실제 공지사항입니다."
+    },
+    {
+        "platform": "meta",
+        "title": "Introducing a New Era of Product Discovery Powered by AI and Creators",
+        "url": "https://www.facebook.com/business/news",
+        "date": "2026.04.16",
+        "id": "meta_0416_0455_3",
+        "category": "notice",
+        "productType": "all",
+        "desc": "Meta 공식 실제 공지사항입니다."
+    },
+    {
+        "id": "mobon_real",
         "platform": "others",
-        "category": "operation",
+        "category": "notice",
         "productType": "display",
-        "title": "[모비온] AD Network 운영 정책 변경 및 단가 조정 안내",
-        "desc": "효율적인 광고비 집행을 위한 네트워크 운영 단가가 조정되었습니다.",
-        "url": "https://www.mobon.net/",
+        "title": "[모비온] AD Network 매체 리포트 고도화 안내",
+        "desc": "실시간 데이터 리포트 대시보드 업데이트 안내입니다.",
+        "url": "https://www.mobon.net",
         "date": "2026.04.16"
     }
 ]
