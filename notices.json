@@ -1,52 +1,42 @@
 [
     {
+        "id": "meta_0",
         "platform": "meta",
         "title": "Log in to Meta for Business",
-        "url": "https://www.facebook.com/business/news",
+        "url": "",
         "date": "2026.04.16",
-        "id": "meta_0416_0455_0",
         "category": "notice",
         "productType": "all",
-        "desc": "Meta 공식 실제 공지사항입니다."
+        "desc": "Meta 실제 공지사항입니다."
     },
     {
+        "id": "meta_2",
         "platform": "meta",
         "title": "Removing Technical Barriers to Help Businesses of All Sizes Get More From Their Ads",
-        "url": "https://www.facebook.com/business/news",
+        "url": "",
         "date": "2026.04.16",
-        "id": "meta_0416_0455_1",
         "category": "notice",
         "productType": "all",
-        "desc": "Meta 공식 실제 공지사항입니다."
+        "desc": "Meta 실제 공지사항입니다."
     },
     {
+        "id": "meta_3",
         "platform": "meta",
         "title": "From Commerce to Culture: How AI is Powering Personalized Connection and Growth Across the Funnel",
-        "url": "https://www.facebook.com/business/news",
+        "url": "",
         "date": "2026.04.16",
-        "id": "meta_0416_0455_2",
         "category": "notice",
         "productType": "all",
-        "desc": "Meta 공식 실제 공지사항입니다."
+        "desc": "Meta 실제 공지사항입니다."
     },
     {
+        "id": "meta_4",
         "platform": "meta",
         "title": "Introducing a New Era of Product Discovery Powered by AI and Creators",
-        "url": "https://www.facebook.com/business/news",
+        "url": "",
         "date": "2026.04.16",
-        "id": "meta_0416_0455_3",
         "category": "notice",
         "productType": "all",
-        "desc": "Meta 공식 실제 공지사항입니다."
-    },
-    {
-        "id": "mobon_real",
-        "platform": "others",
-        "category": "notice",
-        "productType": "display",
-        "title": "[모비온] AD Network 매체 리포트 고도화 안내",
-        "desc": "실시간 데이터 리포트 대시보드 업데이트 안내입니다.",
-        "url": "https://www.mobon.net",
-        "date": "2026.04.16"
+        "desc": "Meta 실제 공지사항입니다."
     }
 ]
