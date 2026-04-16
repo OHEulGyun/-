@@ -1,13 +1,12 @@
 [
     {
-        "id": "sample_1",
-        "platform": "naver",
+        "id": "mobon_1",
+        "platform": "others",
         "category": "notice",
-        "productType": "search",
-        "title": "[점검] 광고 시스템 최적화 작업 안내",
-        "desc": "서비스 안정화를 위한 일 정 점검 안내입니다.",
-        "content": "안정적인 서비스 제공을 위한 서버 점검입니다.",
-        "url": "https://searchad.naver.com/",
+        "productType": "display",
+        "title": "[모비온] 타겟팅 고도화 및 매체 리포트 기능 개선 안내",
+        "desc": "네트워크 광고 서비스 개선 작업에 대한 공지입니다.",
+        "url": "https://www.mobon.net/",
         "date": "2026.04.16"
     }
 ]
