@@ -3,52 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>광고 플랫폼 통합 공지사항 인사이트 센터</title>
+    <title>광고 매체 통합 공지사항 | Premium Insight Center</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <div class="header-left">
-            <div class="header-logo-icon">
-                <span class="material-icons-round">campaign</span>
-            </div>
-            <h1>광고 플랫폼 통합 공지사항 인사이트 센터</h1>
-        </div>
-        <div class="header-right" id="data-status">
-            <!-- Sync status here -->
-        </div>
-    </header>
+    <div class="app-frame">
+        <!-- 1. Side Rail -->
+        <nav class="nav-rail">
+            <div class="nav-item active"><span class="material-icons-round">dashboard</span></div>
+            <div class="nav-item"><span class="material-icons-round">analytics</span></div>
+            <div class="nav-item"><span class="material-icons-round">settings</span></div>
+            <div style="margin-top: auto;" class="nav-item"><span class="material-icons-round">logout</span></div>
+        </nav>
 
-    <main class="dashboard-main">
-        <!-- Left: Notice List -->
-        <section class="side-list-pane">
-            <div class="pane-header">
-                <div class="platform-filter-scroll" id="platform-tabs">
-                    <button class="filter-chip active" data-platform="all">전체 매체</button>
-                    <button class="filter-chip" data-platform="naver">네이버</button>
-                    <button class="filter-chip" data-platform="kakao">카카오</button>
-                    <button class="filter-chip" data-platform="google">구글</button>
-                    <button class="filter-chip" data-platform="meta">메타</button>
-                    <button class="filter-chip" data-platform="daangn">당근</button>
-                    <button class="filter-chip" data-platform="others">기타</button>
+        <!-- 2. List Pane -->
+        <section class="list-pane">
+            <div class="list-header">
+                <h1>Insight 센터</h1>
+                <div class="platform-filter" id="platform-tabs">
+                    <div class="chip active" data-platform="all">전체</div>
+                    <div class="chip" data-platform="naver">Naver</div>
+                    <div class="chip" data-platform="kakao">Kakao</div>
+                    <div class="chip" data-platform="google">Google</div>
+                    <div class="chip" data-platform="meta">Meta</div>
+                    <div class="chip" data-platform="daangn">당근</div>
+                    <div class="chip" data-platform="others">기타</div>
                 </div>
             </div>
-            
-            <div class="scroll-list" id="notice-list-container">
-                <!-- List items inject here -->
+            <div class="notice-list" id="notice-list">
+                <!-- Data injection here -->
             </div>
         </section>
 
-        <!-- Right: Detail View -->
-        <section class="content-detail-pane" id="detail-pane">
-            <div class="detail-empty">
-                <span class="material-icons-round" style="font-size: 64px;">auto_awesome_motion</span>
-                <p style="margin-top: 16px; font-weight: 500;">확인할 공지사항을 목록에서 선택해주세요</p>
+        <!-- 3. Dynamic Detail Pane -->
+        <main class="detail-pane" id="main-detail">
+            <div class="empty-hero">
+                <span class="material-icons-round" style="font-size: 120px;">newspaper</span>
+                <p style="font-size: 20px; font-weight: 700; margin-top: 24px;">분석할 공지사항을 선택해 주세요</p>
             </div>
-        </section>
-    </main>
+        </main>
+    </div>
 
     <script src="app.js"></script>
 </body>
