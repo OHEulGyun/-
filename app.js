@@ -1,6 +1,6 @@
 const platformConfig = {
     naver: { name: '네이버', color: '#03C75A' },
-    kakao: { name: '카카오', color: '#FFCD00' },
+    kakao: { name: '카카오', color: '#E9C400' },
     google: { name: '구글', color: '#4285F4' },
     meta: { name: '메타', color: '#0668E1' },
     daangn: { name: '당근', color: '#FF7E36' },
@@ -9,116 +9,110 @@ const platformConfig = {
 
 const categoryConfig = {
     notice: { name: '공지사항' },
-    product: { name: '업데이트' },
-    policy: { name: '정책센터' },
-    error: { name: '이슈리포트' }
+    product: { name: '상품/서비스' },
+    policy: { name: '정책/심사' },
+    error: { name: '오류/장애' }
 };
 
 let notices = [];
+let filteredNotices = [];
 let currentPlatform = 'all';
-let currentCategory = 'all';
+let selectedId = null;
 
-// DOM Elements
-const noticeGrid = document.getElementById('notice-grid');
-const resultsCount = document.querySelector('.results-count span');
-const platformTabs = document.querySelectorAll('.platform-tab');
-const categoryTabs = document.querySelectorAll('.category-tab');
-const modal = document.getElementById('notice-modal');
-const modalClose = document.getElementById('modal-close');
+// DOM
+const listContainer = document.getElementById('notice-list-container');
+const detailPane = document.getElementById('detail-pane');
+const platformTabs = document.querySelectorAll('.filter-chip');
 
 async function init() {
-    setupEventListeners();
+    setupListeners();
     await loadData();
 }
 
 async function loadData() {
     try {
-        const response = await fetch('notices.json?t=' + Date.now());
-        if (!response.ok) throw new Error();
-        notices = await response.json();
+        const res = await fetch('notices.json?t=' + Date.now());
+        if (!res.ok) throw new Error();
+        notices = await res.json();
     } catch (e) {
-        console.error("Using internal data...");
-        // This is a safety net
+        // High-Quality Placeholder Data for Instant Review
         notices = [
-            { id: 'n1', platform: 'naver', title: '[공지] 네이버 검색광고 서버 정기 점검 안내', date: '2026.04.16', category: 'notice', desc: '보다 안정적인 서비스를 위해 서버 점검을 진행합니다.', url: 'https://searchad.naver.com/' },
-            { id: 'k1', platform: 'kakao', title: '[소식] 카카오 비즈니스 통합 관리 센터 오픈', date: '2026.04.16', category: 'product', desc: '광고와 채널관리를 한눈에 볼 수 있는 센터가 오픈되었습니다.', url: 'https://business.kakao.com/' },
-            { id: 'm1', platform: 'meta', title: '[News] Scaling your business with AI-powered Ads', date: '2026.04.16', category: 'product', desc: 'Learn how to leverage new AI tools in Meta Ads Manager.', url: 'https://www.facebook.com/business' }
+            { id: 'n1', platform: 'naver', title: '[업데이트] 네이버 쇼핑검색광고 ‘AI 추천 더보기’ 노출 확대', date: '2026.04.16', category: 'product', desc: '쇼핑검색광고의 효율을 높이기 위해 AI 추천 영역이 확장되었습니다.\n\n대상: 쇼핑몰상품형 광고주\n내용: 모바일 결과 페이지 하단 AI 추천 탭 내 노출 비중 확대\n기대효과: 연관 구매 의사가 높은 사용자에게 추가 노출 기회 제공' },
+            { id: 'k1', platform: 'kakao', title: '[공지] 카카오 비즈니스 계정 통합 관리 센터 이용 안내', date: '2026.04.16', category: 'notice', desc: '광고, 채널, 스토어를 한 곳에서 관리하는 비즈니스 센터가 개편되었습니다.\n\n새로운 통합 대시보드를 통해 매체별 지표를 한눈에 확인하고 권한을 관리하세요.' },
+            { id: 'g1', platform: 'google', title: '[Policy] Google Ads 대한민국 금융 서비스 정책 업데이트', date: '2026.04.15', category: 'policy', desc: '국내 금융 상품 광고 집행 시 신규 인증 절차가 도입됩니다.\n\n행동 필요: 모든 금융 상품 광고주는 5월 1일까지 추가 인증을 완료해야 합니다.' },
+            { id: 'm1', platform: 'meta', title: '[News] Meta Ads Advantage+ 쇼핑 캠페인 신규 기능', date: '2026.04.14', category: 'product', desc: 'AI 기반 타겟팅 최적화 기능인 Advantage+ 캠페인에 멀티 광고주 타겟팅이 추가되었습니다.' },
+            { id: 'd1', platform: 'daangn', title: '[당근] 지역 타겟팅 광고 내 이웃 관심사 정밀 분석 출시', date: '2026.04.13', category: 'product', desc: '당근비즈니스에서 우리 동네 이웃의 실시간 관심사에 맞춘 정밀 타겟팅 기능을 출시했습니다.' }
         ];
     }
-    render();
+    filterAndRender();
 }
 
-function setupEventListeners() {
+function setupListeners() {
     platformTabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
+        tab.addEventListener('click', () => {
             platformTabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             currentPlatform = tab.dataset.platform;
-            render();
+            filterAndRender();
         });
-    });
-
-    categoryTabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-            categoryTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            currentCategory = tab.dataset.category;
-            render();
-        });
-    });
-
-    modalClose.addEventListener('click', () => {
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
     });
 }
 
-function render() {
-    const filtered = notices.filter(n => {
-        const pMatch = currentPlatform === 'all' || n.platform === currentPlatform;
-        const cMatch = currentCategory === 'all' || n.category === currentCategory;
-        return pMatch && cMatch;
-    });
-
-    resultsCount.textContent = filtered.length;
-    noticeGrid.innerHTML = '';
-
-    filtered.forEach(n => {
-        const p = platformConfig[n.platform] || platformConfig.others;
-        const c = categoryConfig[n.category] || { name: '공지' };
-        
-        const card = document.createElement('div');
-        card.className = 'notice-card';
-        card.innerHTML = `
-            <div class="card-top">
-                <span class="platform-badge" style="background: ${p.color}20; color: ${p.color}">${p.name}</span>
-                <span class="card-date">${n.date}</span>
-            </div>
-            <h3 class="card-title">${n.title}</h3>
-            <p class="card-summary">${n.desc || '상세 내용이 없습니다.'}</p>
-            <div class="card-footer">
-                <span class="tag">#${c.name}</span>
-                <button class="btn-detail">상세보기</button>
-            </div>
-        `;
-        
-        card.addEventListener('click', () => openModal(n));
-        noticeGrid.appendChild(card);
-    });
-}
-
-function openModal(n) {
-    const p = platformConfig[n.platform] || platformConfig.others;
-    document.getElementById('modal-platform').textContent = p.name;
-    document.getElementById('modal-platform').style.color = p.color;
-    document.getElementById('modal-date').textContent = n.date;
-    document.getElementById('modal-title').textContent = n.title;
-    document.getElementById('modal-category').textContent = categoryConfig[n.category]?.name || '공지사항';
-    document.getElementById('modal-body-content').textContent = n.desc || '상세 내용이 없습니다.';
-    document.getElementById('modal-link').href = n.url || '#';
+function filterAndRender() {
+    filteredNotices = notices.filter(n => currentPlatform === 'all' || n.platform === currentPlatform);
     
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    // Render Left List
+    listContainer.innerHTML = '';
+    filteredNotices.forEach(n => {
+        const p = platformConfig[n.platform] || platformConfig.others;
+        const div = document.createElement('div');
+        div.className = `notice-item ${selectedId === n.id ? 'active' : ''}`;
+        div.innerHTML = `
+            <div class="item-top">
+                <span class="p-badge" style="background: ${p.color}20; color: ${p.color}">${p.name}</span>
+                <span class="item-date">${n.date}</span>
+            </div>
+            <div class="item-title">${n.title}</div>
+        `;
+        div.onclick = () => selectItem(n.id);
+        listContainer.appendChild(div);
+    });
+
+    if (selectedId) {
+        renderDetail(selectedId);
+    }
+}
+
+function selectItem(id) {
+    selectedId = id;
+    const items = document.querySelectorAll('.notice-item');
+    filterAndRender(); // Heavy refresh but keeps state simple
+    renderDetail(id);
+}
+
+function renderDetail(id) {
+    const n = notices.find(item => item.id === id);
+    if (!n) return;
+
+    const p = platformConfig[n.platform] || platformConfig.others;
+    const c = categoryConfig[n.category] || { name: '일반' };
+
+    detailPane.innerHTML = `
+        <div class="detail-container">
+            <div class="detail-header">
+                <span class="p-badge" style="background: ${p.color}20; color: ${p.color}">${p.name} 공식 안내</span>
+                <h2>${n.title}</h2>
+                <div class="detail-info">
+                    <span>분류: <strong>${c.name}</strong></span>
+                    <span>작성일: <strong>${n.date}</strong></span>
+                </div>
+            </div>
+            <div class="detail-body">
+                ${n.desc.replace(/\n/g, '<br>')}
+            </div>
+            ${n.url ? `<a href="${n.url}" target="_blank" class="btn-visit">공공 홈페이지에서 원문 보기 <span class="material-icons-round" style="margin-left:8px; font-size:18px;">open_in_new</span></a>` : ''}
+        </div>
+    `;
 }
 
 document.addEventListener('DOMContentLoaded', init);

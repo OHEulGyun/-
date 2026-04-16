@@ -3,76 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ads Notice Dashboard | Premium Insights</title>
+    <title>광고 플랫폼 통합 공지사항 인사이트 센터</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <header>
-            <div class="header-logo">
-                <div class="logo-circle">
-                    <span class="material-icons-round" style="color: white; font-size: 20px;">analytics</span>
+    <header>
+        <div class="header-left">
+            <div class="header-logo-icon">
+                <span class="material-icons-round">campaign</span>
+            </div>
+            <h1>광고 플랫폼 통합 공지사항 인사이트 센터</h1>
+        </div>
+        <div class="header-right" id="data-status">
+            <!-- Sync status here -->
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <!-- Left: Notice List -->
+        <section class="side-list-pane">
+            <div class="pane-header">
+                <div class="platform-filter-scroll" id="platform-tabs">
+                    <button class="filter-chip active" data-platform="all">전체 매체</button>
+                    <button class="filter-chip" data-platform="naver">네이버</button>
+                    <button class="filter-chip" data-platform="kakao">카카오</button>
+                    <button class="filter-chip" data-platform="google">구글</button>
+                    <button class="filter-chip" data-platform="meta">메타</button>
+                    <button class="filter-chip" data-platform="daangn">당근</button>
+                    <button class="filter-chip" data-platform="others">기타</button>
                 </div>
-                <h1>Ads Notice Hub</h1>
             </div>
             
-            <nav class="platform-tabs" id="platform-tabs">
-                <button class="platform-tab active" data-platform="all">전체</button>
-                <button class="platform-tab" data-platform="naver">네이버</button>
-                <button class="platform-tab" data-platform="kakao">카카오</button>
-                <button class="platform-tab" data-platform="google">구글</button>
-                <button class="platform-tab" data-platform="meta">메타</button>
-                <button class="platform-tab" data-platform="daangn">당근</button>
-                <button class="platform-tab" data-platform="others">기타</button>
-            </nav>
-        </header>
+            <div class="scroll-list" id="notice-list-container">
+                <!-- List items inject here -->
+            </div>
+        </section>
 
-        <!-- Main Categories -->
-        <div class="filter-bar">
-            <button class="category-tab active" data-category="all">Latest Feed</button>
-            <button class="category-tab" data-category="notice">공지사항</button>
-            <button class="category-tab" data-category="product">업데이트</button>
-            <button class="category-tab" data-category="policy">정책센터</button>
-            <button class="category-tab" data-category="error">이슈리포트</button>
-            
-            <div style="flex-grow: 1;"></div>
-            
-            <div class="results-count" style="margin-right: 20px;">총 <span>0</span>건</div>
-        </div>
-
-        <!-- Content Grid -->
-        <main class="notice-grid" id="notice-grid">
-            <!-- Dynamic cards inject here -->
-        </main>
-    </div>
-
-    <!-- Modal System -->
-    <div class="modal-overlay" id="notice-modal">
-        <div class="modal-content">
-            <button class="modal-close" id="modal-close">
-                <span class="material-icons-round">close</span>
-            </button>
-            <div class="modal-header">
-                <span class="platform-badge" id="modal-platform">Platform</span>
-                <span class="card-date" id="modal-date">Date</span>
+        <!-- Right: Detail View -->
+        <section class="content-detail-pane" id="detail-pane">
+            <div class="detail-empty">
+                <span class="material-icons-round" style="font-size: 64px;">auto_awesome_motion</span>
+                <p style="margin-top: 16px; font-weight: 500;">확인할 공지사항을 목록에서 선택해주세요</p>
             </div>
-            <h2 class="modal-title" id="modal-title" style="margin-top: 20px;">Title</h2>
-            <div class="modal-tags" style="margin-bottom: 25px;">
-                <span class="tag" id="modal-category">Category</span>
-            </div>
-            <div class="modal-body" id="modal-body-content" style="color: var(--text-secondary); line-height: 1.8;">
-                Body content...
-            </div>
-            <div class="modal-footer" style="justify-content: flex-start; margin-top: 30px;">
-                <a href="#" target="_blank" class="btn-link" id="modal-link">
-                    원문 보러가기 <span class="material-icons-round" style="font-size: 16px;">open_in_new</span>
-                </a>
-            </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script src="app.js"></script>
 </body>
