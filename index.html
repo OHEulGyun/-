@@ -3,122 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>광고 매체 통합 공지사항 | Premium Insight Center</title>
+    <title>Insight Center | Premium Ad Intelligence</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 </head>
 <body>
+    <!-- Immersive Animated Background -->
+    <div class="bg-mesh"></div>
+
     <div class="app-frame">
-        <!-- Side Navigation Rail -->
+        <!-- Ultra-Sleek Nav Rail -->
         <nav class="nav-rail">
             <div class="nav-item active" data-view="dashboard">
                 <span class="material-icons-round">dashboard</span>
-                <span class="label">대시보드</span>
+                <div class="label">INTELLIGENCE</div>
             </div>
             <div class="nav-item" data-view="intelligence">
                 <span class="material-icons-round">analytics</span>
-                <span class="label">매체 인텔리전스</span>
+                <div class="label">ANALYTICS</div>
             </div>
             <div class="nav-item" data-view="settings">
-                <span class="material-icons-round">settings</span>
-                <span class="label">맞춤 설정</span>
+                <span class="material-icons-round">tune</span>
+                <div class="label">CONFIG</div>
             </div>
-            <div style="margin-top: auto;" class="nav-item"><span class="material-icons-round">logout</span></div>
+            <div style="margin-top: auto;" class="nav-item">
+                <span class="material-icons-round">logout</span>
+            </div>
         </nav>
 
-        <!-- PAGE 1: DASHBOARD (Current View) -->
-        <div id="view-dashboard" class="page-view active">
+        <!-- PAGE 1: DASHBOARD -->
+        <div id="view-dashboard" class="page-view active" style="flex-grow: 1; display: flex;">
             <section class="list-pane">
                 <div class="list-header">
-                    <h1>Insight 센터</h1>
+                    <h1>Insight Center</h1>
                     <div class="platform-filter" id="platform-tabs">
-                        <div class="chip active" data-platform="all">전체</div>
-                        <div class="chip" data-platform="naver">Naver</div>
-                        <div class="chip" data-platform="kakao">Kakao</div>
-                        <div class="chip" data-platform="google">Google</div>
-                        <div class="chip" data-platform="meta">Meta</div>
-                        <div class="chip" data-platform="daangn">당근</div>
-                        <div class="chip" data-platform="others">기타</div>
+                        <div class="chip active" data-platform="all">ALL PLATFORMS</div>
+                        <div class="chip" data-platform="naver">NAVER</div>
+                        <div class="chip" data-platform="kakao">KAKAO</div>
+                        <div class="chip" data-platform="google">GOOGLE</div>
+                        <div class="chip" data-platform="meta">META</div>
+                        <div class="chip" data-platform="daangn">DAANGN</div>
                     </div>
                 </div>
-                <div class="notice-list" id="notice-list">
-                    <!-- Data injection here -->
+                <div class="scroll-list" id="notice-list">
+                    <!-- Cards here -->
                 </div>
             </section>
+            
             <main class="detail-pane" id="main-detail">
-                <div class="empty-hero">
-                    <span class="material-icons-round" style="font-size: 120px;">newspaper</span>
-                    <p style="font-size: 20px; font-weight: 700; margin-top: 24px;">분석할 공지사항을 선택해 주세요</p>
+                <div class="luxury-hero" style="text-align: center; padding-top: 15vh; opacity: 0.2;">
+                    <span class="material-icons-round" style="font-size: 160px;">explore</span>
+                    <h1 style="font-size: 24px;">SELECT AN INSIGHT TO EXPLORE</h1>
                 </div>
             </main>
         </div>
 
-        <!-- PAGE 2: INTELLIGENCE (Trend & Status) -->
-        <div id="view-intelligence" class="page-view">
-            <div class="analytics-view">
-                <div style="max-width: 1200px; margin: 0 auto 40px;">
-                    <h2 style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); margin-bottom: 8px;">매체 인텔리전스</h2>
-                    <p style="color: var(--text-dim);">글로벌 광고 매체의 실시간 시스템 상태와 주간 핵심 트렌드를 분석합니다.</p>
-                </div>
+        <!-- PAGE 2: ANALYTICS (Intelligence) -->
+        <div id="view-intelligence" class="page-view" style="flex-grow: 1;">
+            <!-- Content here same as before but styled with luxury classes -->
+            <div class="analytics-view" style="padding: 100px; max-width: 1200px; margin: 0 auto;">
+                <h2 style="font-size: 4rem; font-weight: 900; color: white; margin-bottom: 20px; letter-spacing: -4px;">ANALYTICS</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 60px;">매체별 실시간 가동 상태 및 딥 다이브 데이터 분석 리포트</p>
                 
-                <div class="intel-grid">
-                    <div class="intel-card">
-                        <h3 style="margin-bottom: 20px; font-weight: 800;">🛰️ 시스템 가동 상태</h3>
-                        <div style="display: flex; flex-direction: column; gap: 16px;">
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Naver Search Ads</span>
-                                <span><span class="status-dot" style="background: #22863a;"></span>정상</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Kakao Moment</span>
-                                <span><span class="status-dot" style="background: #22863a;"></span>정상</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Google Ads API</span>
-                                <span><span class="status-dot" style="background: #d73a49;"></span>지연 (APAC)</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Meta Ads Manager</span>
-                                <span><span class="status-dot" style="background: #22863a;"></span>정상</span>
-                            </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px;">
+                    <div style="background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px; border: 1px solid var(--border-glass);">
+                        <h3 style="color: white; margin-bottom: 30px; font-weight: 800;">🛰️ SYSTEM STATUS</h3>
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div style="display: flex; justify-content: space-between;"><span>NAVER SEARCH ADS</span><span style="color: #22c55e;">OPERATIONAL</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span>GOOGLE ADS CORE</span><span style="color: #eab308;">LATENCY</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span>META ADS MANAGER</span><span style="color: #22c55e;">OPERATIONAL</span></div>
                         </div>
                     </div>
-                    
-                    <div class="intel-card">
-                        <h3 style="margin-bottom: 20px; font-weight: 800;">🔥 주간 Hot 트렌드</h3>
-                        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
-                            <p><strong>1. 쿠키리스 대응:</strong> 구글 Privacy Sandbox의 서드파티 쿠키 중단 계획 재확인 및 대안 엔진 고도화</p>
-                            <p><strong>2. AI 비딩 전략:</strong> 메타 Advantage+ 캠페인의 예측 모델 갱신으로 인한 전환 효율 변동성 증가</p>
-                            <p><strong>3. 당근 로컬 임팩트:</strong> 지역 타겟팅 광고 내 '전문가 찾기' 카테고리 입찰 경쟁률 15% 상승</p>
-                        </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px; border: 1px solid var(--border-glass);">
+                        <h3 style="color: white; margin-bottom: 30px; font-weight: 800;">⚡ WEEKLY HOT TRENDS</h3>
+                        <p style="margin-bottom: 20px;">• Meta Advantage+ AI 비딩 효율 12% 상승 기록</p>
+                        <p style="margin-bottom: 20px;">• Google 서드파티 쿠키 대체 API 고도화 릴리즈</p>
+                        <p>• Naver 성과형 디스플레이 상품 타겟팅 정교화 안내</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- PAGE 3: SETTINGS (Watchlist) -->
-        <div id="view-settings" class="page-view">
-            <div class="settings-view">
-                <h2 style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); margin-bottom: 40px;">맞춤 설정</h2>
+        <!-- PAGE 3: SETTINGS -->
+        <div id="view-settings" class="page-view" style="flex-grow: 1;">
+            <div style="padding: 100px; max-width: 800px; margin: 0 auto;">
+                <h2 style="font-size: 4rem; font-weight: 900; color: white; margin-bottom: 20px; letter-spacing: -4px;">CONFIG</h2>
+                <p style="margin-bottom: 60px;">사용자 맞춤형 인사이트 감시 설정 및 알림 구성</p>
                 
-                <div class="config-group">
-                    <h3 style="font-weight: 800; margin-bottom: 12px;">🔍 공지사항 감시 키워드</h3>
-                    <p style="font-size: 13px; color: var(--text-dim);">관심 있는 단어를 입력해 두면, 해당 단어가 포함된 공지가 올라왔을 때 별도로 표시해 드립니다.</p>
-                    <input type="text" class="input-box" placeholder="예: 입찰, 정책 변경, 점검, 타겟팅" value="입찰, 정책, 점검">
-                    <button class="btn-cta" style="margin-top: 16px; padding: 12px 24px; font-size: 14px;">설정 저장</button>
-                </div>
-
-                <div class="config-group">
-                    <h3 style="font-weight: 800; margin-bottom: 12px;">📱 긴급 알림 수단</h3>
-                    <div style="display: flex; gap: 24px; margin-top: 16px;">
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" checked> 이메일 알림
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox"> 슬랙(Slack) 연동
-                        </label>
-                    </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px; border: 1px solid var(--border-glass); margin-bottom: 40px;">
+                    <h3 style="color: white; margin-bottom: 12px; font-weight: 800;">WATCHLIST KEYWORDS</h3>
+                    <input type="text" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 16px; border-radius: 12px; color: white;" value="입찰, 정책, 점검">
                 </div>
             </div>
         </div>
