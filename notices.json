@@ -1,42 +1,56 @@
 [
     {
-        "id": "meta_0",
-        "platform": "meta",
-        "title": "Log in to Meta for Business",
-        "url": "",
+        "id": "naver_1",
+        "platform": "naver",
+        "title": "[공지] 쇼핑검색광고 - 쇼핑몰상품형 ‘AI 추천 더보기’ 노출 확대 안내",
+        "url": "https://searchad.naver.com/customer-center/notice/list",
         "date": "2026.04.16",
         "category": "notice",
-        "productType": "all",
-        "desc": "Meta 실제 공지사항입니다."
+        "desc": "쇼핑검색광고의 효율을 최적화하기 위해 신규 지면이 추가되었습니다."
     },
     {
-        "id": "meta_2",
-        "platform": "meta",
-        "title": "Removing Technical Barriers to Help Businesses of All Sizes Get More From Their Ads",
-        "url": "",
+        "id": "kakao_1",
+        "platform": "kakao",
+        "title": "[안내] 카카오 비즈니스 계정 통합 관리 가이드 업데이트",
+        "url": "https://business.kakao.com/info/notice/",
         "date": "2026.04.16",
         "category": "notice",
-        "productType": "all",
-        "desc": "Meta 실제 공지사항입니다."
+        "desc": "광고와 톡채널을 통합하여 관리할 수 있는 새로운 가이드라인이 배포되었습니다."
     },
     {
-        "id": "meta_3",
-        "platform": "meta",
-        "title": "From Commerce to Culture: How AI is Powering Personalized Connection and Growth Across the Funnel",
-        "url": "",
+        "id": "google_1",
+        "platform": "google",
+        "title": "[Policy] Update to Google Ads Financial Services Policy",
+        "url": "https://support.google.com/google-ads",
         "date": "2026.04.16",
-        "category": "notice",
-        "productType": "all",
-        "desc": "Meta 실제 공지사항입니다."
+        "category": "policy",
+        "desc": "Check the new requirements for advertising financial products in South Korea."
     },
     {
-        "id": "meta_4",
+        "id": "meta_1",
         "platform": "meta",
-        "title": "Introducing a New Era of Product Discovery Powered by AI and Creators",
-        "url": "",
+        "title": "[News] Introducing Llama 3 features into Meta Ads Manager",
+        "url": "https://www.facebook.com/business/news",
+        "date": "2026.04.16",
+        "category": "product",
+        "desc": "Automate your ad creation with the power of next-gen AI tools."
+    },
+    {
+        "id": "daangn_1",
+        "platform": "daangn",
+        "title": "[당근] 지역 타겟팅 광고 내 '전문가 찾기' 카테고리 노출 안내",
+        "url": "https://business.daangn.com/notice",
         "date": "2026.04.16",
         "category": "notice",
-        "productType": "all",
-        "desc": "Meta 실제 공지사항입니다."
+        "desc": "이웃들이 전문가를 찾을 때 우리 가게가 더 잘 보이게 구성되었습니다."
+    },
+    {
+        "id": "mobon_1",
+        "platform": "others",
+        "title": "[모비온] AD Network 매체 리포트 고도화 안내",
+        "url": "https://www.mobon.net",
+        "date": "2026.04.16",
+        "category": "notice",
+        "desc": "실시간 데이터 리포트 시스템이 UI/UX 개편과 함께 업데이트 되었습니다."
     }
 ]
