@@ -4,7 +4,8 @@ on:
   push:
     branches: [ "main" ]
   schedule:
-    - cron: '0 */6 * * *' # Run every 6 hours
+    - cron: '0 0 * * *' # Every day at 0:00 UTC (9:00 AM KST)
+    - cron: '0 12 * * *' # Every day at 12:00 UTC (9:00 PM KST) for double check
   workflow_dispatch:
 
 jobs:
@@ -34,5 +35,5 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add notices.json
-        git commit -m "Real-time sync: Fetch actual notices for ALL platforms" || exit 0
+        git commit -m "Auto-update notices: 9:00 AM KST Sync" || exit 0
         git push
