@@ -3,101 +3,109 @@ import email
 from email.header import decode_header
 import json
 import os
-from datetime import datetime
+import re
+from datetime import datetime, timedelta
 
 # --- CONFIGURATION ---
-IMAP_SERVER = "imap.gmail.com"
+IMAP_SERVER = "imap.gmail.com" 
 EMAIL_USER = "oilguys@motiv-i.com"
-EMAIL_PASS = os.getenv("EMAIL_PASS")  # Password now loaded from environment variable for security
+EMAIL_PASS = os.getenv("EMAIL_PASS")
 # ---------------------
 
+# Platform whitelist patterns (Sender or Subject)
+PLATFORM_FILTERS = {
+    'naver': r'naver|네이버',
+    'kakao': r'kakao|카카오',
+    'google': r'google|구글|ads-noreply',
+    'meta': r'meta|facebook|instagram|비즈니스',
+    'daangn': r'daangn|당근',
+}
+
+def clean_html(raw_html):
+    """Remove HTML tags to get clean text for the dashboard."""
+    cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+    cleantext = re.sub(cleanr, '', raw_html)
+    return " ".join(cleantext.split())
+
 def get_platform_source(subject, sender):
-    subject = subject.lower()
-    sender = sender.lower()
-    if 'naver' in subject or 'naver' in sender: return 'naver'
-    if 'kakao' in subject or 'kakao' in sender: return 'kakao'
-    if 'google' in subject or 'google' in sender: return 'google'
-    if 'meta' in subject or 'facebook' in sender or 'instagram' in sender: return 'meta'
-    if 'daangn' in subject or 'daangn' in sender: return 'daangn'
+    combined = f"{subject} {sender}".lower()
+    for source, pattern in PLATFORM_FILTERS.items():
+        if re.search(pattern, combined):
+            return source
     return 'others'
 
 def fetch_platform_emails():
     if not EMAIL_PASS:
         print("Error: EMAIL_PASS environment variable is not set.")
-        print("Please set it using: $env:EMAIL_PASS='your_password' (PowerShell) or see documentation.")
         return
 
     try:
-        # Connect to server
         mail = imaplib.IMAP4_SSL(IMAP_SERVER)
         mail.login(EMAIL_USER, EMAIL_PASS)
         mail.select("inbox")
 
-        # Search for all emails (you can limit this, e.g., UNSEEN or from specific domains)
-        # Search for common platform keywords to filter early if needed
-        status, messages = mail.search(None, 'ALL')
+        # Fetch emails from the last 3 months (90 days)
+        date_cutoff = (datetime.now() - timedelta(days=90)).strftime("%d-%b-%Y")
+        search_query = f'(SINCE "{date_cutoff}")'
+        status, messages = mail.search(None, search_query)
         
         email_ids = messages[0].split()
-        # Get last 20 emails
-        latest_email_ids = email_ids[-20:]
-
         fetched_emails = []
 
-        for e_id in reversed(latest_email_ids):
-            res, msg = mail.fetch(e_id, "(RFC822)")
-            for response in msg:
+        print(f"Searching through {len(email_ids)} recent emails...")
+
+        for e_id in reversed(email_ids):
+            res, msg_data = mail.fetch(e_id, "(RFC822)")
+            for response in msg_data:
                 if isinstance(response, tuple):
                     msg = email.message_from_bytes(response[1])
                     
-                    # Store headers
-                    subject, encoding = decode_header(msg["Subject"])[0]
-                    if isinstance(subject, bytes):
-                        subject = subject.decode(encoding if encoding else "utf-8")
+                    subject = decode_header(msg["Subject"])[0]
+                    if isinstance(subject[0], bytes):
+                        subject = subject[0].decode(subject[1] if subject[1] else "utf-8")
+                    else:
+                        subject = subject[0]
                     
-                    from_, encoding = decode_header(msg.get("From"))[0]
-                    if isinstance(from_, bytes):
-                        from_ = from_.decode(encoding if encoding else "utf-8")
+                    from_ = msg.get("From", "")
                     
-                    date_ = msg.get("Date")
-                    
-                    # Filter: Only include platform-related emails
                     source = get_platform_source(subject, from_)
-                    
-                    # Extract body
+                    if source == 'others': continue # Skip irrelevant personal emails
+
+                    # Robust body extraction (HTML & Plain)
                     body = ""
                     if msg.is_multipart():
                         for part in msg.walk():
-                            content_type = part.get_content_type()
-                            content_disposition = str(part.get("Content-Disposition"))
-                            try:
-                                payload = part.get_payload(decode=True).decode()
-                                if content_type == "text/plain" and "attachment" not in content_disposition:
-                                    body += payload
-                            except:
-                                pass
+                            if part.get_content_type() == "text/plain":
+                                body += part.get_payload(decode=True).decode(errors='ignore')
+                            elif part.get_content_type() == "text/html":
+                                html_content = part.get_payload(decode=True).decode(errors='ignore')
+                                body += clean_html(html_content)
                     else:
-                        body = msg.get_payload(decode=True).decode()
+                        body = msg.get_payload(decode=True).decode(errors='ignore')
 
                     fetched_emails.append({
                         "id": f"mail_{e_id.decode()}",
                         "source": source,
                         "from": from_,
                         "title": subject,
-                        "date": date_,
-                        "body": body[:2000] # Limit size
+                        "date": msg.get("Date"),
+                        "body": body[:3000].strip() # Dashboard friendly size
                     })
 
-        # Save to JSON
+            if len(fetched_emails) >= 30: break # Max view
+
         output_path = os.path.join(os.path.dirname(__file__), '..', 'emails.json')
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(fetched_emails, f, ensure_ascii=False, indent=4)
             
-        print(f"Successfully fetched {len(fetched_emails)} emails and saved to emails.json")
+        print(f"Success: {len(fetched_emails)} platform emails integrated.")
         mail.close()
         mail.logout()
 
+    except imaplib.IMAP4.error as e:
+        print(f"Authentication Failed: Check if 'App Password' is required for {EMAIL_USER}")
     except Exception as e:
-        print(f"Error fetching emails: {e}")
+        print(f"Sync error: {e}")
 
 if __name__ == "__main__":
     fetch_platform_emails()
