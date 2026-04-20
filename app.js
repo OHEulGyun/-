@@ -148,52 +148,48 @@ function selectNotice(id) {
 
     // Enrichment Logic
     const points = n.desc.split('\n').filter(l => l.trim().length > 5).slice(0, 3);
-    const impact = n.category === 'policy' ? '치명적 - 광고 운영 정책 확인 필수' : '높음 - 지표 모니터링 및 설정 최적화 권장';
+    const impact = n.category === 'policy' ? 'HIGH - POLICY VERIFICATION REQUIRED' : 'STABLE - MONITORING RECOMMENDED';
 
     detailEl.innerHTML = `
         <div class="detail-container">
-            <div class="luxury-hero" style="border-left: 8px solid ${p.color}; padding-left: 32px; background: ${p.theme}; border-radius: 0 24px 24px 0;">
-                <div style="display: flex; align-items: center; gap: 12px; color: ${p.color}; margin-bottom: 24px;">
-                    <span class="material-icons-round" style="font-size: 28px;">${p.icon}</span>
-                    <span style="font-weight: 800; font-size: 14px; letter-spacing: 3px;">INTELLIGENCE ANALYSIS</span>
+            <div class="luxury-hero" style="border-bottom: 1px solid #E2E8F0; padding-bottom: 48px; margin-bottom: 48px;">
+                <div style="display: flex; align-items: center; gap: 8px; color: var(--accent-primary); margin-bottom: 16px; font-weight: 800; font-size: 13px; letter-spacing: 1px;">
+                    <span class="material-icons-round" style="font-size: 20px;">${p.icon}</span>
+                    <span>INTEL REPORT • ${p.name.toUpperCase()}</span>
                 </div>
-                <h1 style="font-size: 3.5rem; line-height: 1.2; letter-spacing: -3px; color: white; margin-bottom: 24px;">${n.title}</h1>
-                <div class="info-stripe">
-                    <span>SOURCE: 공식 ${p.name}</span>
-                    <span>TYPE: ${c.name}</span>
-                    <span>TIMESTAMP: ${n.date} 09:00 KST</span>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px;">
-                <div style="background: rgba(255,255,255,0.03); padding: 32px; border-radius: 24px; border: 1px solid var(--border-glass);">
-                    <div style="color: ${p.color}; font-weight: 800; font-size: 12px; margin-bottom: 12px;">핵심 포인트</div>
-                    <div style="font-size: 14px; color: white; line-height: 1.6;">${points[0] || '매체 서비스 최적화 업데이트'}</div>
-                </div>
-                <div style="background: rgba(255,255,255,0.03); padding: 32px; border-radius: 24px; border: 1px solid var(--border-glass);">
-                    <div style="color: var(--accent-gold); font-weight: 800; font-size: 12px; margin-bottom: 12px;">예상 영향도</div>
-                    <div style="font-size: 14px; color: white; line-height: 1.6;">${impact}</div>
-                </div>
-                <div style="background: rgba(255,255,255,0.03); padding: 32px; border-radius: 24px; border: 1px solid var(--border-glass);">
-                    <div style="color: var(--accent-secondary); font-weight: 800; font-size: 12px; margin-bottom: 12px;">운영 권장사항</div>
-                    <div style="font-size: 14px; color: white; line-height: 1.6;">집행 중인 캠페인의 전환 데이터 추이 분석</div>
+                <h1 style="font-size: 48px; font-weight: 900; color: #0F172A; letter-spacing: -2px; margin-bottom: 24px; line-height: 1.1;">${n.title}</h1>
+                <div style="display: flex; gap: 24px; color: #64748B; font-weight: 600; font-size: 13px;">
+                    <span style="display: flex; align-items: center; gap: 6px;"><span class="material-icons-round" style="font-size: 16px;">calendar_today</span> ${n.date}</span>
+                    <span style="display: flex; align-items: center; gap: 6px;"><span class="material-icons-round" style="font-size: 16px;">tag</span> ${c.name}</span>
                 </div>
             </div>
 
-            <div class="content-box" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-glass);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-                    <h3 style="font-size: 1.5rem; font-weight: 800; color: white; border-bottom: 4px solid ${p.color}; padding-bottom: 8px;">상세 분석 데이터</h3>
-                    <div style="font-size: 12px; color: var(--text-body);">수집 엔진: Antigravity-Core v2.5</div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 60px;">
+                <div style="background: #F8FAFC; padding: 32px; border-radius: 20px; border: 1px solid #E2E8F0;">
+                    <div style="color: var(--accent-primary); font-weight: 800; font-size: 12px; text-transform: uppercase; margin-bottom: 16px;">Market Impact</div>
+                    <div style="font-size: 24px; font-weight: 900; color: #0F172A; margin-bottom: 8px;">${impact}</div>
+                    <div style="font-size: 13px; color: #64748B;">Based on latest platform volatility data</div>
                 </div>
-                <div class="content-body" style="font-size: 1.3rem; line-height: 2.2; color: #E2E8F0;">
+                <div style="background: #F8FAFC; padding: 32px; border-radius: 20px; border: 1px solid #E2E8F0;">
+                    <div style="color: #10B981; font-weight: 800; font-size: 12px; text-transform: uppercase; margin-bottom: 16px;">Core Insight</div>
+                    <div style="font-size: 15px; color: #334155; line-height: 1.6; font-weight: 600;">${points[0] || 'Optimization paths identified for current seasonal trends.'}</div>
+                </div>
+            </div>
+
+            <div class="content-box">
+                <h3 style="font-size: 18px; font-weight: 800; color: #0F172A; margin-bottom: 32px; display: flex; align-items: center; gap: 10px;">
+                    <span style="width: 4px; height: 18px; background: var(--accent-primary); border-radius: 10px;"></span>
+                    Deep Dive Analytics
+                </h3>
+                <div class="content-body" style="font-size: 16px; line-height: 1.8; color: #334155;">
                     ${n.desc.replace(/\n/g, '<br>')}
                 </div>
                 
-                <div style="text-align: right; margin-top: 80px;">
+                <div style="margin-top: 60px;">
                     ${n.url ? `
-                        <a href="${n.url}" target="_blank" class="btn-premium" style="background: ${p.color}; color: white; padding: 24px 60px;">
-                            ${p.name} 원문 확인하기
-                            <span class="material-icons-round" style="margin-left: 12px; font-size: 24px;">rocket_launch</span>
+                        <a href="${n.url}" target="_blank" class="btn-premium" style="background: var(--accent-primary); color: white; border-radius: 12px; padding: 18px 32px; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 10px;">
+                            View Source Documentation
+                            <span class="material-icons-round">open_in_new</span>
                         </a>
                     ` : ''}
                 </div>
@@ -217,21 +213,20 @@ function selectEmail(id) {
 
     emailDetailEl.innerHTML = `
         <div class="detail-container">
-            <div class="luxury-hero" style="border-left: 8px solid ${p.color}; padding-left: 32px; background: rgba(255,255,255,0.02); border-radius: 24px;">
-                <div style="display: flex; align-items: center; gap: 12px; color: ${p.color}; margin-bottom: 24px;">
-                    <span class="material-icons-round" style="font-size: 28px;">mail</span>
-                    <span style="font-weight: 800; font-size: 14px; letter-spacing: 3px;">DIRECT PLATFORM MAIL</span>
+            <div class="luxury-hero" style="border-bottom: 1px solid #E2E8F0; padding-bottom: 48px; margin-bottom: 48px;">
+                <div style="display: flex; align-items: center; gap: 8px; color: var(--accent-primary); margin-bottom: 16px; font-weight: 800; font-size: 13px; letter-spacing: 1px;">
+                    <span class="material-icons-round" style="font-size: 20px;">mail</span>
+                    <span>DIRECT COMMUNICATION</span>
                 </div>
-                <h1 style="font-size: 3rem; line-height: 1.2; color: white; margin-bottom: 24px;">${e.title}</h1>
-                <div class="info-stripe">
-                    <span>FROM: ${e.from}</span>
-                    <span>TO: oilguys@motiv-i.com</span>
-                    <span>RECEIVED: ${e.date}</span>
+                <h1 style="font-size: 40px; font-weight: 900; color: #0F172A; letter-spacing: -1.5px; margin-bottom: 24px; line-height: 1.2;">${e.title}</h1>
+                <div style="display: flex; flex-direction: column; gap: 8px; color: #64748B; font-weight: 500; font-size: 14px;">
+                    <div style="display: flex; gap: 12px;"><strong>From:</strong> ${e.from}</div>
+                    <div style="display: flex; gap: 12px;"><strong>Sent:</strong> ${e.date}</div>
                 </div>
             </div>
 
-            <div class="content-box" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-glass); margin-top: 32px;">
-                <div class="content-body" style="font-size: 1.2rem; line-height: 2; color: #E2E8F0;">
+            <div class="content-box" style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 40px; border-radius: 24px;">
+                <div class="content-body" style="font-size: 15px; line-height: 1.6; color: #334155;">
                     ${e.body.replace(/\n/g, '<br>')}
                 </div>
             </div>
