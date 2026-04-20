@@ -23,6 +23,10 @@
                 <span class="material-icons-round">analytics</span>
                 <div class="label">ANALYTICS</div>
             </div>
+            <div class="nav-item" data-view="email">
+                <span class="material-icons-round">mail_outline</span>
+                <div class="label">MAILBOX</div>
+            </div>
             <div class="nav-item" data-view="settings">
                 <span class="material-icons-round">tune</span>
                 <div class="label">CONFIG</div>
@@ -85,7 +89,30 @@
             </div>
         </div>
 
-        <!-- PAGE 3: SETTINGS -->
+        <!-- PAGE 3: MAILBOX (Emails) -->
+        <div id="view-email" class="page-view" style="flex-grow: 1; display: none;">
+            <section class="list-pane">
+                <div class="list-header">
+                    <h1>Mailbox</h1>
+                    <div style="font-size: 12px; color: var(--text-body); opacity: 0.6; margin-top: 8px;">oilguys@motiv-i.com</div>
+                    <div class="platform-filter" id="email-filter-tabs" style="margin-top: 20px;">
+                        <div class="chip active" data-source="all">ALL EMAILS</div>
+                    </div>
+                </div>
+                <div class="scroll-list" id="email-list">
+                    <!-- Email Cards here -->
+                </div>
+            </section>
+            
+            <main class="detail-pane" id="email-detail">
+                <div class="luxury-hero" style="text-align: center; padding-top: 15vh; opacity: 0.2;">
+                    <span class="material-icons-round" style="font-size: 160px;">drafts</span>
+                    <h1 style="font-size: 24px;">SELECT AN EMAIL TO READ</h1>
+                </div>
+            </main>
+        </div>
+
+        <!-- PAGE 4: SETTINGS -->
         <div id="view-settings" class="page-view" style="flex-grow: 1;">
             <div style="padding: 100px; max-width: 800px; margin: 0 auto;">
                 <h2 style="font-size: 4rem; font-weight: 900; color: white; margin-bottom: 20px; letter-spacing: -4px;">CONFIG</h2>

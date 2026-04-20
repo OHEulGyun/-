@@ -16,12 +16,18 @@ const categoryConfig = {
 
 let notices = [];
 let filteredNotices = [];
+let emails = [];
+let filteredEmails = [];
 let currentPlatform = 'all';
-let selectedId = null;
+let currentEmailSource = 'all';
+let selectedNoticeId = null;
+let selectedEmailId = null;
 
 // DOM 
 const listEl = document.getElementById('notice-list');
 const detailEl = document.getElementById('main-detail');
+const emailListEl = document.getElementById('email-list');
+const emailDetailEl = document.getElementById('email-detail');
 const chips = document.querySelectorAll('.chip');
 const navItems = document.querySelectorAll('.nav-item[data-view]');
 const pageViews = document.querySelectorAll('.page-view');
@@ -30,6 +36,7 @@ async function init() {
     setupInteraction();
     setupViewSwitcher();
     await loadData();
+    await loadEmailData();
 }
 
 function setupViewSwitcher() {
@@ -41,7 +48,7 @@ function setupViewSwitcher() {
             pageViews.forEach(v => {
                 v.style.display = 'none';
                 if (v.id === `view-${target}`) {
-                    v.style.display = target === 'dashboard' ? 'flex' : 'block';
+                    v.style.display = (target === 'dashboard' || target === 'email') ? 'flex' : 'block';
                     v.classList.add('active');
                 }
             });
@@ -65,6 +72,22 @@ async function loadData() {
     if (notices.length > 0) selectNotice(notices[0].id);
 }
 
+async function loadEmailData() {
+    try {
+        const res = await fetch('emails.json?t=' + Date.now());
+        if (!res.ok) throw new Error();
+        emails = await res.json();
+    } catch (e) {
+        emails = [
+            { id: 'e1', source: 'meta', from: 'Meta for Business', title: 'Your account oilguys@motiv-i.com: Meta Ads Policy Update', date: '2026.04.19', body: '안녕하세요, 오을균님.\n\nMeta 광고 정책이 일부 개정되었습니다. 귀하의 계정(oilguys@motiv-i.com)과 관련된 주요 변경 사항을 안내드립니다.\n\n1. 개인정보 처리 방침 고도화\n2. 주류 및 금융 관련 광고 타겟팅 제한 강화\n\n상세 내용은 비즈니스 센터에서 확인해 주십시오.' },
+            { id: 'e2', source: 'kakao', from: '카카오 비즈니스', title: '[카카오] oilguys@motiv-i.com 광고 캐시 잔액 부족 안내', date: '2026.04.18', body: '광고주님, 현재 카카오 비즈니스 계정의 잔액이 설정된 하한가 미만으로 소진되었습니다.\n\n계정: oilguys@motiv-i.com\n현재 잔액: 5,420원\n\n광고 중단을 방지하기 위해 충전을 진행해 주시기 바랍니다.' },
+            { id: 'e3', source: 'naver', from: '네이버 광고', title: '[네이버광고] 신규 노출 영역 추가 테스트 캠페인 안내', date: '2026.04.18', body: '네이버 성과형 디스플레이 광고의 새로운 지면 테스트가 시작됩니다.\n\n참여 메일: oilguys@motiv-i.com\n내용: 통합 검색 하단 쇼핑 추천 영역 확장 테스트' }
+        ];
+    }
+    filterAndDrawEmails();
+    if (emails.length > 0) selectEmail(emails[0].id);
+}
+
 function setupInteraction() {
     chips.forEach(chip => {
         chip.addEventListener('click', () => {
@@ -82,7 +105,7 @@ function filterAndDraw() {
     filteredNotices.forEach(n => {
         const p = platformConfig[n.platform] || platformConfig.others;
         const div = document.createElement('div');
-        div.className = `notice-item ${selectedId === n.id ? 'selected' : ''}`;
+        div.className = `notice-item ${selectedNoticeId === n.id ? 'selected' : ''}`;
         div.innerHTML = `
             <span class="item-badge" style="background: ${p.color}20; color: ${p.color}">#${p.name}</span>
             <div class="item-title">${n.title}</div>
@@ -93,12 +116,29 @@ function filterAndDraw() {
     });
 }
 
+function filterAndDrawEmails() {
+    filteredEmails = emails; // For now all, can add source filter later
+    emailListEl.innerHTML = '';
+    filteredEmails.forEach(e => {
+        const p = platformConfig[e.source] || platformConfig.others;
+        const div = document.createElement('div');
+        div.className = `notice-item ${selectedEmailId === e.id ? 'selected' : ''}`;
+        div.innerHTML = `
+            <span class="item-badge" style="background: ${p.color}20; color: ${p.color}">@${e.from}</span>
+            <div class="item-title">${e.title}</div>
+            <div style="font-size: 11px; color: var(--text-body); opacity: 0.6;">${e.date} · EMAIL</div>
+        `;
+        div.onclick = () => selectEmail(e.id);
+        emailListEl.appendChild(div);
+    });
+}
+
 function selectNotice(id) {
-    selectedId = id;
+    selectedNoticeId = id;
     const n = notices.find(item => item.id === id);
     if (!n) return;
 
-    document.querySelectorAll('.notice-item').forEach(it => {
+    document.querySelectorAll('#notice-list .notice-item').forEach(it => {
         it.classList.remove('selected');
         if (it.querySelector('.item-title').innerText === n.title) it.classList.add('selected');
     });
@@ -106,13 +146,12 @@ function selectNotice(id) {
     const p = platformConfig[n.platform] || platformConfig.others;
     const c = categoryConfig[n.category] || { name: '인사이트', label: 'INSICHT', mood: '#64748B' };
 
-    // Enrichment Logic (풍부한 내용 자동 구성)
+    // Enrichment Logic
     const points = n.desc.split('\n').filter(l => l.trim().length > 5).slice(0, 3);
     const impact = n.category === 'policy' ? '치명적 - 광고 운영 정책 확인 필수' : '높음 - 지표 모니터링 및 설정 최적화 권장';
 
     detailEl.innerHTML = `
         <div class="detail-container">
-            <!-- 1. 초고급 히어로 영역 -->
             <div class="luxury-hero" style="border-left: 8px solid ${p.color}; padding-left: 32px; background: ${p.theme}; border-radius: 0 24px 24px 0;">
                 <div style="display: flex; align-items: center; gap: 12px; color: ${p.color}; margin-bottom: 24px;">
                     <span class="material-icons-round" style="font-size: 28px;">${p.icon}</span>
@@ -126,7 +165,6 @@ function selectNotice(id) {
                 </div>
             </div>
 
-            <!-- 2. 전문가용 인사이트 요약 그리드 (Rich Grid) -->
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px;">
                 <div style="background: rgba(255,255,255,0.03); padding: 32px; border-radius: 24px; border: 1px solid var(--border-glass);">
                     <div style="color: ${p.color}; font-weight: 800; font-size: 12px; margin-bottom: 12px;">핵심 포인트</div>
@@ -142,7 +180,6 @@ function selectNotice(id) {
                 </div>
             </div>
 
-            <!-- 3. 본문 및 상세 데이터 -->
             <div class="content-box" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-glass);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
                     <h3 style="font-size: 1.5rem; font-weight: 800; color: white; border-bottom: 4px solid ${p.color}; padding-bottom: 8px;">상세 분석 데이터</h3>
@@ -164,6 +201,43 @@ function selectNotice(id) {
         </div>
     `;
     detailEl.scrollTo(0, 0);
+}
+
+function selectEmail(id) {
+    selectedEmailId = id;
+    const e = emails.find(item => item.id === id);
+    if (!e) return;
+
+    document.querySelectorAll('#email-list .notice-item').forEach(it => {
+        it.classList.remove('selected');
+        if (it.querySelector('.item-title').innerText === e.title) it.classList.add('selected');
+    });
+
+    const p = platformConfig[e.source] || platformConfig.others;
+
+    emailDetailEl.innerHTML = `
+        <div class="detail-container">
+            <div class="luxury-hero" style="border-left: 8px solid ${p.color}; padding-left: 32px; background: rgba(255,255,255,0.02); border-radius: 24px;">
+                <div style="display: flex; align-items: center; gap: 12px; color: ${p.color}; margin-bottom: 24px;">
+                    <span class="material-icons-round" style="font-size: 28px;">mail</span>
+                    <span style="font-weight: 800; font-size: 14px; letter-spacing: 3px;">DIRECT PLATFORM MAIL</span>
+                </div>
+                <h1 style="font-size: 3rem; line-height: 1.2; color: white; margin-bottom: 24px;">${e.title}</h1>
+                <div class="info-stripe">
+                    <span>FROM: ${e.from}</span>
+                    <span>TO: oilguys@motiv-i.com</span>
+                    <span>RECEIVED: ${e.date}</span>
+                </div>
+            </div>
+
+            <div class="content-box" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-glass); margin-top: 32px;">
+                <div class="content-body" style="font-size: 1.2rem; line-height: 2; color: #E2E8F0;">
+                    ${e.body.replace(/\n/g, '<br>')}
+                </div>
+            </div>
+        </div>
+    `;
+    emailDetailEl.scrollTo(0, 0);
 }
 
 document.addEventListener('DOMContentLoaded', init);
