@@ -1,79 +1,121 @@
 import os
 import json
 import datetime
-import random
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
+def crawl_platform(p, platform_name, url, category):
+    today = datetime.datetime.now().strftime("%Y.%m.%d")
+    notice = {
+        "id": f"{platform_name[:2]}_{datetime.datetime.now().strftime('%y%m%d')}_1",
+        "platform": platform_name,
+        "title": f"[{platform_name.capitalize()}] 최신 공지사항 확인",
+        "date": today,
+        "category": category,
+        "desc": "최신 광고 공지사항을 확인해주세요.",
+        "url": url
+    }
+    
+    try:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url, wait_until="domcontentloaded", timeout=20000)
+        
+        # Add a short delay to allow JS rendering
+        page.wait_for_timeout(2000)
+        
+        title_text = None
+        link_url = None
+        
+        # 1. Platform Specific Precise Selectors
+        try:
+            if platform_name == "naver":
+                elem = page.locator("a[href^='/notice/']").first
+                if elem.count() > 0:
+                    title_text = elem.inner_text()
+                    link_url = "https://ads.naver.com" + elem.get_attribute("href")
+            elif platform_name == "kakao":
+                elem = page.locator("a[href*='bulletin'] .tit_board, a.link_board").first
+                if elem.count() > 0:
+                    title_text = elem.inner_text()
+                    link_url = url
+            elif platform_name == "google":
+                elem = page.locator("a.article-link").first
+                if elem.count() > 0:
+                    title_text = elem.inner_text()
+                    link_url = "https://support.google.com" + elem.get_attribute("href")
+            elif platform_name == "daangn":
+                elem = page.locator("main h1").first
+                if elem.count() > 0:
+                    title_text = elem.inner_text()
+                    link_url = url
+            elif platform_name == "mobon":
+                elem = page.locator(".list_wrap a, .post a").first
+                if elem.count() > 0:
+                    title_text = elem.inner_text()
+                    link_url = elem.get_attribute("href")
+            elif platform_name == "criteo":
+                elem = page.locator("h3 a").first
+                if elem.count() > 0:
+                    title_text = elem.inner_text()
+                    link_url = elem.get_attribute("href")
+        except Exception as e:
+            print(f"Specific selector failed for {platform_name}: {e}")
+
+        # 2. Apply strict extraction if successful
+        if title_text and len(title_text.strip()) > 2:
+            notice["title"] = title_text.strip()
+            if link_url:
+                if link_url.startswith('/'):
+                    from urllib.parse import urlparse
+                    parsed_uri = urlparse(url)
+                    link_url = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri) + link_url
+                notice["url"] = link_url
+        else:
+            # 3. Fallback to Generic Extraction via BeautifulSoup
+            html = page.content()
+            soup = BeautifulSoup(html, "html.parser")
+            links = soup.find_all('a')
+            for link in links:
+                text = link.get_text(strip=True)
+                href = link.get('href')
+                if text and len(text) > 12 and href:
+                    if 'notice' in href.lower() or 'bulletin' in href.lower() or 'announcement' in href.lower() or 'guide' in href.lower() or 'insight' in href.lower():
+                        notice["title"] = text
+                        if href.startswith('/'):
+                            from urllib.parse import urlparse
+                            parsed_uri = urlparse(url)
+                            notice["url"] = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri) + href
+                        elif href.startswith('http'):
+                            notice["url"] = href
+                        break
+                    
+        browser.close()
+    except Exception as e:
+        print(f"Error crawling {platform_name}: {e}")
+        
+    return notice
+
 def main():
     today = datetime.datetime.now().strftime("%Y.%m.%d")
-    print(f"Starting Fail-Proof Sync for {today}")
+    print(f"Starting Scraper for {today}")
     
-    # -------------------------------------------------------------
-    # REAL CONTENT BASE (Directly sourced for 100% reliability today)
-    # -------------------------------------------------------------
-    notices = [
-        # Naver
-        {
-            "id": "nv_260417_1",
-            "platform": "naver",
-            "title": "[공지] 쇼핑검색광고 - 쇼핑몰상품형 ‘AI 추천 더보기’ 노출 확대 안내",
-            "date": today,
-            "category": "product",
-            "desc": "쇼핑검색광고의 효율을 높이기 위해 모바일 검색 결과 하단 AI 추천 탭 내의 노출 빈도가 상향됩니다. 광고주님께서는 관리자 페이지 리포트를 통해 성과 변화를 모니터링해 주시기 바랍니다.",
-            "url": "https://searchad.naver.com"
-        },
-        # Kakao
-        {
-            "id": "kk_260417_1",
-            "platform": "kakao",
-            "title": "[안내] 카카오 비즈니스 계정 통합 관리 가이드 및 약관 개정 안내",
-            "date": today,
-            "category": "notice",
-            "desc": "비즈니스 계정 통합 관리를 위한 가이드라인이 업데이트되었습니다. 새로운 시스템을 통해 광고, 톡채널, 스토어 권한을 한 번에 제어할 수 있습니다.",
-            "url": "https://business.kakao.com"
-        },
-        # Google
-        {
-            "id": "gg_260417_1",
-            "platform": "google",
-            "title": "[Policy] Google Ads 대한민국 내 금융 서비스 광고 인증 필수화 적용",
-            "date": today,
-            "category": "policy",
-            "desc": "신뢰할 수 있는 광고 환경 제공을 위해 국내 모든 금융 서비스 광고주의 추가 본인 인증이 의무화되었습니다. 미이행 시 광고 게재가 중단될 수 있습니다.",
-            "url": "https://support.google.com/google-ads"
-        },
-        # Meta
-        {
-            "id": "mt_260417_1",
-            "platform": "meta",
-            "title": "[Feature] Meta Advantage+ 쇼핑 캠페인 Llama 3 기반 예측 모델 탑재",
-            "date": today,
-            "category": "product",
-            "desc": "Meta의 최신 AI 모델인 Llama 3가 Advantage+ 광고 엔진에 탑재되어 타겟팅 정교화 및 전환 효율이 대폭 개선되었습니다.",
-            "url": "https://www.facebook.com/business"
-        },
-        # Daangn
-        {
-            "id": "dg_260417_1",
-            "platform": "daangn",
-            "title": "[당근] 지역 타겟팅 광고 - '전문가 찾기' 카테고리 입찰 로직 변경",
-            "date": today,
-            "category": "notice",
-            "desc": "이웃들의 최신 관심사 데이터 반영 주기가 단축되어, 보다 활발한 로컬 광고 운영이 가능해졌습니다.",
-            "url": "https://business.daangn.com"
-        }
+    platforms = [
+        {"name": "naver", "url": "https://ads.naver.com/notice", "category": "notice"},
+        {"name": "kakao", "url": "https://lounge-board.kakao.com/bulletin/list?serviceType=KAKAOMOMENT", "category": "notice"},
+        {"name": "google", "url": "https://support.google.com/google-ads/announcements/9048695?sjid=183181733834323708-NC", "category": "policy"},
+        {"name": "daangn", "url": "https://businessdaangn.gitbook.io/business.daangn/guide/account", "category": "notice"},
+        {"name": "mobon", "url": "https://www.mobon.net/main/m2/blog/insight.php", "category": "notice"},
+        {"name": "criteo", "url": "https://www.criteo.com/", "category": "notice"}
     ]
-
-    # Try to fetch even MORE data live via Playwright
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            # Live scraping logic here (simplified for guaranteed execution)
-            browser.close()
-    except Exception as e:
-        print(f"Live sampling deferred. Using Base Data: {e}")
-
+    
+    notices = []
+    with sync_playwright() as p:
+        for p_info in platforms:
+            print(f"Crawling {p_info['name']}...")
+            notice = crawl_platform(p, p_info['name'], p_info['url'], p_info['category'])
+            notices.append(notice)
+            
     # Finalize and Save
     with open('notices.json', 'w', encoding='utf-8') as f:
         json.dump(notices, f, ensure_ascii=False, indent=4)
