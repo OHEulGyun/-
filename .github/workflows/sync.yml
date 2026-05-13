@@ -1,6 +1,9 @@
 name: Sync Ads Notices and Emails
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     - cron: '0 * * * *' # Every hour
   workflow_dispatch: # Allow manual trigger
